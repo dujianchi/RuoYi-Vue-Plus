@@ -1,5 +1,6 @@
 package com.xxl.job.admin.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobRegistry;
 import com.xxl.job.admin.core.util.I18nUtil;
@@ -47,14 +48,14 @@ public class JobGroupController {
                                         String appname, String title) {
 
         // page query
-        List<XxlJobGroup> list = xxlJobGroupDao.pageList(start, length, appname, title);
-        int list_count = xxlJobGroupDao.pageListCount(start, length, appname, title);
+        Page<XxlJobGroup> page = xxlJobGroupDao.pageList(start, length, appname, title);
+//        int list_count = xxlJobGroupDao.pageListCount(start, length, appname, title);
 
         // package result
         Map<String, Object> maps = new HashMap<String, Object>();
-        maps.put("recordsTotal" , list_count);        // 总记录数
-        maps.put("recordsFiltered" , list_count);    // 过滤后的总记录数
-        maps.put("data" , list);                    // 分页列表
+        maps.put("recordsTotal" , page.getTotal());        // 总记录数
+        maps.put("recordsFiltered" , page.getTotal());    // 过滤后的总记录数
+        maps.put("data" , page.getRecords());                    // 分页列表
         return maps;
     }
 
@@ -174,7 +175,7 @@ public class JobGroupController {
     public ReturnT<String> remove(int id) {
 
         // valid
-        int count = xxlJobInfoDao.pageListCount(0, 10, id, -1, null, null, null);
+        long count = xxlJobInfoDao.pageListCount(0, 10, id, -1, null, null, null);
         if (count > 0) {
             return new ReturnT<String>(500, I18nUtil.getString("jobgroup_del_limit_0"));
         }

@@ -1,5 +1,6 @@
 package com.xxl.job.admin.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xxl.job.admin.core.complete.XxlJobCompleter;
 import com.xxl.job.admin.core.exception.XxlJobException;
 import com.xxl.job.admin.core.model.XxlJobGroup;
@@ -107,14 +108,14 @@ public class JobLogController {
         }
 
         // page query
-        List<XxlJobLog> list = xxlJobLogDao.pageList(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
-        int list_count = xxlJobLogDao.pageListCount(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
+        Page<XxlJobLog> page = xxlJobLogDao.pageList(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
+//        int list_count = xxlJobLogDao.pageListCount(start, length, jobGroup, jobId, triggerTimeStart, triggerTimeEnd, logStatus);
 
         // package result
         Map<String, Object> maps = new HashMap<String, Object>();
-        maps.put("recordsTotal" , list_count);        // 总记录数
-        maps.put("recordsFiltered" , list_count);    // 过滤后的总记录数
-        maps.put("data" , list);                    // 分页列表
+        maps.put("recordsTotal" , page.getTotal());        // 总记录数
+        maps.put("recordsFiltered" , page.getTotal());    // 过滤后的总记录数
+        maps.put("data" , page.getRecords());                    // 分页列表
         return maps;
     }
 

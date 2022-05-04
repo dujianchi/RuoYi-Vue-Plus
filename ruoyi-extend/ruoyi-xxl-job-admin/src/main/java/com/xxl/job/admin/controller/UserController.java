@@ -1,5 +1,6 @@
 package com.xxl.job.admin.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xxl.job.admin.controller.annotation.PermissionLimit;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobUser;
@@ -53,9 +54,9 @@ public class UserController {
                                         String username, int role) {
 
         // page list
-        List<XxlJobUser> list = xxlJobUserDao.pageList(start, length, username, role);
-        int list_count = xxlJobUserDao.pageListCount(start, length, username, role);
-
+        Page<XxlJobUser> page = xxlJobUserDao.pageList(start, length, username, role);
+//        int list_count = xxlJobUserDao.pageListCount(start, length, username, role);
+        List<XxlJobUser> list = page.getRecords();
         // filter
         if (list != null && list.size() > 0) {
             for (XxlJobUser item : list) {
@@ -65,8 +66,8 @@ public class UserController {
 
         // package result
         Map<String, Object> maps = new HashMap<String, Object>();
-        maps.put("recordsTotal" , list_count);        // 总记录数
-        maps.put("recordsFiltered" , list_count);    // 过滤后的总记录数
+        maps.put("recordsTotal" , page.getTotal());        // 总记录数
+        maps.put("recordsFiltered" , page.getTotal());    // 过滤后的总记录数
         maps.put("data" , list);                      // 分页列表
         return maps;
     }

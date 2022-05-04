@@ -1,5 +1,6 @@
 package com.xxl.job.admin.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xxl.job.admin.core.cron.CronExpression;
 import com.xxl.job.admin.core.model.XxlJobGroup;
 import com.xxl.job.admin.core.model.XxlJobInfo;
@@ -47,14 +48,14 @@ public class XxlJobServiceImpl implements XxlJobService {
     public Map<String, Object> pageList(int start, int length, int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
 
         // page list
-        List<XxlJobInfo> list = xxlJobInfoDao.pageList(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
-        int list_count = xxlJobInfoDao.pageListCount(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
+        Page<XxlJobInfo> page = xxlJobInfoDao.pageList(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
+//        int list_count = xxlJobInfoDao.pageListCount(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
 
         // package result
         Map<String, Object> maps = new HashMap<String, Object>();
-        maps.put("recordsTotal" , list_count);        // 总记录数
-        maps.put("recordsFiltered" , list_count);    // 过滤后的总记录数
-        maps.put("data" , list);                    // 分页列表
+        maps.put("recordsTotal" , page.getTotal());        // 总记录数
+        maps.put("recordsFiltered" , page.getTotal());    // 过滤后的总记录数
+        maps.put("data" , page.getRecords());                    // 分页列表
         return maps;
     }
 
@@ -325,7 +326,7 @@ public class XxlJobServiceImpl implements XxlJobService {
         }
 
         xxlJobInfo.setTriggerStatus(1);
-        xxlJobInfo.setTriggerLastTime(0);
+        xxlJobInfo.setTriggerLastTime(0L);
         xxlJobInfo.setTriggerNextTime(nextTriggerTime);
 
         xxlJobInfo.setUpdateTime(new Date());
@@ -338,8 +339,8 @@ public class XxlJobServiceImpl implements XxlJobService {
         XxlJobInfo xxlJobInfo = xxlJobInfoDao.loadById(id);
 
         xxlJobInfo.setTriggerStatus(0);
-        xxlJobInfo.setTriggerLastTime(0);
-        xxlJobInfo.setTriggerNextTime(0);
+        xxlJobInfo.setTriggerLastTime(0L);
+        xxlJobInfo.setTriggerNextTime(0L);
 
         xxlJobInfo.setUpdateTime(new Date());
         xxlJobInfoDao.update(xxlJobInfo);
@@ -349,7 +350,7 @@ public class XxlJobServiceImpl implements XxlJobService {
     @Override
     public Map<String, Object> dashboardInfo() {
 
-        int jobInfoCount = xxlJobInfoDao.findAllCount();
+        long jobInfoCount = xxlJobInfoDao.findAllCount();
         int jobLogCount = 0;
         int jobLogSuccessCount = 0;
         XxlJobLogReport xxlJobLogReport = xxlJobLogReportDao.queryLogReportTotal();

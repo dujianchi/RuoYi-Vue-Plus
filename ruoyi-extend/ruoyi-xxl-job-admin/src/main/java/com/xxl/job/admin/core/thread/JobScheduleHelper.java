@@ -1,5 +1,6 @@
 package com.xxl.job.admin.core.thread;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xxl.job.admin.core.conf.XxlJobAdminConfig;
 import com.xxl.job.admin.core.cron.CronExpression;
 import com.xxl.job.admin.core.model.XxlJobInfo;
@@ -77,7 +78,8 @@ public class JobScheduleHelper {
 
                         // 1、pre read
                         long nowTime = System.currentTimeMillis();
-                        List<XxlJobInfo> scheduleList = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().scheduleJobQuery(nowTime + PRE_READ_MS, preReadCount);
+                        Page<XxlJobInfo> page = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().scheduleJobQuery(nowTime + PRE_READ_MS, preReadCount);
+                        List<XxlJobInfo> scheduleList = page.getRecords();
                         if (scheduleList!=null && scheduleList.size()>0) {
                             // 2、push time-ring
                             for (XxlJobInfo jobInfo: scheduleList) {
@@ -276,8 +278,8 @@ public class JobScheduleHelper {
             jobInfo.setTriggerNextTime(nextValidTime.getTime());
         } else {
             jobInfo.setTriggerStatus(0);
-            jobInfo.setTriggerLastTime(0);
-            jobInfo.setTriggerNextTime(0);
+            jobInfo.setTriggerLastTime(0L);
+            jobInfo.setTriggerNextTime(0L);
             logger.warn(">>>>>>>>>>> xxl-job, refreshNextValidTime fail for job: jobId={}, scheduleType={}, scheduleConf={}",
                     jobInfo.getId(), jobInfo.getScheduleType(), jobInfo.getScheduleConf());
         }
